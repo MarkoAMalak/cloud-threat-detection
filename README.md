@@ -1,5 +1,12 @@
 # Behavior-Based Cloud Threat Detection in AWS using Machine Learning
 
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![CI/CD](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-black)
+![Trivy](https://img.shields.io/badge/Security-Trivy%20Scanned-brightgreen)
+![AWS](https://img.shields.io/badge/AWS-CloudTrail-orange)
+
 A cloud security and machine learning project that analyzes AWS CloudTrail logs to detect anomalous behavior, generate refined human-focused alerts, and visualize suspicious activities through an interactive Streamlit dashboard.
 
 The project also includes a DevSecOps layer with Docker, GitHub Actions CI/CD, Trivy security scanning, and Docker Hub image publishing.
@@ -142,6 +149,19 @@ These results represent the final investigation-ready output after preprocessing
 
 ---
 
+## Screenshots
+
+### Dashboard Overview
+![Dashboard Overview](docs/images/dashboard-overview.png)
+
+### Investigation Filters and Charts
+![Filters and Charts](docs/images/dashboard-filters-charts.png)
+
+### Suspicious Activity Charts
+![Suspicious Charts](docs/images/dashboard-charts.png)
+
+---
+
 ## Dashboard
 
 The dashboard provides:
@@ -155,6 +175,26 @@ The dashboard provides:
 - final ranked investigation alerts
 
 It is designed to make anomaly detection results easier to understand and more useful for cloud security investigation.
+
+---
+
+## Architecture
+
+![Project Architecture](docs/architecture-diagram.png)
+
+For more details, see [docs/architecture.md](docs/architecture.md).
+
+---
+
+## Threat Model
+
+This project is mainly intended to help detect:
+- privileged misuse
+- account compromise indicators
+- suspicious API behavior
+- reconnaissance and enumeration patterns
+
+For more details, see [docs/threat-model.md](docs/threat-model.md).
 
 ---
 
@@ -173,7 +213,10 @@ cloud-threat-detection/
 │   └── final_outputs/
 │
 ├── docs/
-│   └── architecture.md
+│   ├── architecture.md
+│   ├── threat-model.md
+│   ├── architecture-diagram.png
+│   └── images/
 │
 ├── infra/
 │   └── docker/

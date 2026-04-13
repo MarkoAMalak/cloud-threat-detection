@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Smoke check Python files
+        run: |
+          python -m py_compile app/streamlit_app.py
+          python -m py_compile scripts/preprocessing/finalize_alerts.py
+
+      - name: Verify final dashboard data exists
+        run: |
+          test -f data/final_outputs/final_all_anomalies.csv
+          test -f data/final_outputs/final_human_alerts.csv
+          test -f data/final_outputs/final_top_alerts.csv
+
+      - name: Build Docker image
+        run: |
+          docker build -f infra/docker/Dockerfile -t cloud-threat-detection-dashboard:${{ github.sha }} .
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          output: trivy-fs.txt
+          exit-code: 0
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: cloud-threat-detection-dashboard:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          output: trivy-image.txt
+          exit-code: 0
+
+      - name: Upload scan reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: |
+            trivy-fs.txt
+            trivy-image.txt

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# Env
+.env
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Large project data not needed for dashboard container
+data/raw/
+data/processed/
+data/scored/
+
+# Local reports
+reports/
+
+# Old dashboard folder if not used in container
+dashboard/
+
+# Tests and docs not needed in runtime image
+tests/
+docs/
+
+# Scripts not needed for Streamlit runtime image
+scripts/

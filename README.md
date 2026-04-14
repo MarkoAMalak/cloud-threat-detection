@@ -22,6 +22,28 @@ This project addresses that challenge by building a behavior-based anomaly detec
 
 ---
 
+## Repository Scope
+
+This repository contains the **runtime / portfolio version** of the project.
+
+It includes:
+- the Streamlit dashboard
+- final investigation outputs
+- Docker and CI/CD files
+- documentation and security notes
+
+To keep the repository lightweight and compatible with GitHub size limits, the large raw dataset and intermediate processing files are not included in this version of the repository.
+
+As a result, the repository is intended for:
+- dashboard execution
+- result inspection
+- Docker-based usage
+- CI/CD demonstration
+
+It is not intended to rerun the full preprocessing and model training pipeline without restoring the archived raw and intermediate data.
+
+---
+
 ## Key Features
 
 - AWS CloudTrail log preprocessing and cleaning
@@ -50,7 +72,8 @@ This project uses the **flaws.cloud CloudTrail dataset**, a public AWS CloudTrai
 - `mfaAuthenticated`
 - `errorCode`
 
-> Large raw and intermediate datasets are excluded from Git tracking because of GitHub size limits.
+> Large raw and intermediate datasets are excluded from Git tracking because of GitHub size limits.  
+> The current GitHub version focuses on final outputs, dashboard delivery, and DevSecOps integration.
 
 ---
 
@@ -207,10 +230,10 @@ cloud-threat-detection/
 │   └── streamlit_app.py
 │
 ├── data/
-│   ├── raw/
-│   ├── processed/
-│   ├── scored/
 │   └── final_outputs/
+│       ├── final_all_anomalies.csv
+│       ├── final_human_alerts.csv
+│       └── final_top_alerts.csv
 │
 ├── docs/
 │   ├── architecture.md
@@ -238,6 +261,10 @@ cloud-threat-detection/
 ├── tests/
 │   └── test_dashboard_smoke.py
 │
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── .dockerignore
 ├── .gitignore
 ├── requirements.txt
@@ -248,27 +275,16 @@ cloud-threat-detection/
 
 ## Main Components
 
-### Preprocessing
-- `flatten_and_clean_all_cloudtrail.py`
-- `prepare_features.py`
-- `build_behavior_features.py`
-- `refine_behavior_features.py`
-- `finalize_alerts.py`
-
-### Modeling
-- `train_isolation_forest.py`
-- `train_behavior_isolation_forest.py`
-- `train_refined_behavior_model.py`
-
-### Analysis
-- `analyze_csv.py`
-- `analyze_anomalies.py`
-- `analyze_behavior_anomalies.py`
-- `analyze_refined_anomalies.py`
-- `compare_models.py`
-
-### Dashboard
+### Active in this repository version
 - `app/streamlit_app.py`
+- `infra/docker/Dockerfile`
+- `.github/workflows/ci.yml`
+- `data/final_outputs/`
+
+### Included project scripts
+The repository also contains the original preprocessing, modeling, and analysis scripts under `scripts/` for project completeness and reference.
+
+> Note: these scripts may require archived raw/intermediate data to run again end-to-end.
 
 ---
 
@@ -279,34 +295,25 @@ cloud-threat-detection/
 python -m pip install -r requirements.txt
 ```
 
-### Generate final alerts
-```bash
-python .\scripts\preprocessing\finalize_alerts.py
-```
-
 ### Run the dashboard
 ```bash
 python -m streamlit run .\app\streamlit_app.py
 ```
 
----
-
-## Docker
-
-### Build the image
+### Run with Docker
 ```bash
 docker build -f .\infra\docker\Dockerfile -t cloud-threat-detection-dashboard .
-```
-
-### Run the container
-```bash
 docker run --rm -p 8501:8501 cloud-threat-detection-dashboard
 ```
 
-### Open the dashboard
-```text
-http://localhost:8501
-```
+### Important note
+The current repository version is optimized for:
+- dashboard execution
+- final alert inspection
+- Docker usage
+- CI/CD demonstration
+
+The full preprocessing, feature engineering, and model training pipeline requires archived raw and intermediate data that are not included in this lightweight GitHub version.
 
 ---
 
@@ -396,3 +403,5 @@ This helps identify:
 This project demonstrates how behavior-based anomaly detection can be used to identify suspicious cloud activities from AWS CloudTrail logs.
 
 By combining preprocessing, feature engineering, anomaly detection, alert refinement, dashboard visualization, Docker containerization, CI/CD automation, and security scanning, the project provides a practical and extensible cloud threat detection workflow.
+
+This GitHub version is focused on reproducibility, dashboard delivery, and DevSecOps integration, while the full training workflow depends on archived large datasets and intermediate files.

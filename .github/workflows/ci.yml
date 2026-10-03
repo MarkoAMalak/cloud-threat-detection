@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 env:
-  IMAGE_NAME: abdelazez1/cloud-threat-detection
+  # Set the DOCKERHUB_USERNAME and DOCKERHUB_TOKEN repository secrets to publish the image.
+  HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
 
 jobs:
   build-scan-push:
@@ -35,7 +36,12 @@ jobs:
       - name: Smoke check Python files
         run: |
           python -m py_compile app/streamlit_app.py
-          python -m py_compile scripts/preprocessing/finalize_alerts.py
+          python -m compileall -q scripts
+
+      - name: Dashboard tests
+        run: |
+          pip install pytest
+          python -m pytest -q
 
       - name: Verify final dashboard data exists
         run: |
@@ -48,7 +54,7 @@ jobs:
           docker build -f infra/docker/Dockerfile -t cloud-threat-detection-dashboard:${{ github.sha }} .
 
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -59,7 +65,7 @@ jobs:
           exit-code: 0
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
         with:
           image-ref: cloud-threat-detection-dashboard:${{ github.sha }}
           severity: CRITICAL,HIGH
@@ -77,19 +83,19 @@ jobs:
             trivy-image.txt
 
       - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && env.HAS_DOCKERHUB == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push image to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && env.HAS_DOCKERHUB == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
           file: infra/docker/Dockerfile
           push: true
           tags: |
-            abdelazez1/cloud-threat-detection:latest
-            abdelazez1/cloud-threat-detection:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/cloud-threat-detection:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cloud-threat-detection:${{ github.sha }}

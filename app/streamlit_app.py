@@ -110,7 +110,7 @@ def main():
     existing_cols = [c for c in show_cols if c in filtered.columns]
     display_df = filtered[existing_cols].sort_values(by="final_alert_score", ascending=False)
 
-    st.dataframe(display_df, use_container_width=True, height=500)
+    st.dataframe(display_df, width="stretch", height=500)
 
     st.divider()
 
@@ -127,7 +127,7 @@ def main():
         "anomaly_score",
     ]
     human_existing = [c for c in human_show if c in human_df.columns]
-    st.dataframe(human_df[human_existing].head(100), use_container_width=True, height=350)
+    st.dataframe(human_df[human_existing].head(100), width="stretch", height=350)
 
 
 if __name__ == "__main__":
